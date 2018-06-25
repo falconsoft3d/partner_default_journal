@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_account_journal_tree34" model="ir.ui.view">
+            <field name="name">account.journal.tree</field>
+            <field name="model">account.journal</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <tree string="Account Journal">
+                    <field name='sequence' widget='handle'/>
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="belongs_to_company" invisible="1"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_account_journal_search34" model="ir.ui.view">
+            <field name="name">account.journal.search</field>
+            <field name="model">account.journal</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <search string="Search Account Journal">
+                    <field name="name" filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]" string="Journal"/>
+                    <filter domain="[('type', '=', 'sale')]" string="Sale"/>
+                    <filter domain="[('type', '=', 'purchase')]" string="Purchase"/>
+                    <filter domain="['|', ('type', '=', 'cash'), ('type', '=', 'bank')]" string="Liquidity"/>
+                    <filter domain="[('type', 'not in', ['sale', 'purchase', 'cash', 'bank'])]" string="Miscellaneous"/>
+                    <filter name="dashboard" string="Favorites" domain="[('show_on_dashboard', '=', True)]"/>
+                </search>
+            </field>
+        </record>
+        <record id="view_account_journal_form34" model="ir.ui.view">
+            <field name="name">account.journal.form</field>
+            <field name="model">account.journal</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <form string="Account Journal">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" class="oe_inline"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="type"/>
+                            </group>
+                            <group>
+                                <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="journal_entries" string="Journal Entries">
+                                <group>
+                                    <group>
+                                        <field name="code"/>
+                                        <field name="refund_sequence" attrs="{'invisible': [('type', 'not in', ['sale', 'purchase'])]}" groups="base.group_no_one"/>
+                                        <field name="sequence_id" required="0" attrs="{'readonly': 1}" groups="base.group_no_one"/>
+                                        <field name="refund_sequence_id" required="0" attrs="{'readonly': 1, 'invisible': ['|',('type', 'not in', ['sale', 'purchase']), ('refund_sequence', '!=', True)]}" groups="base.group_no_one"/>
+                                    </group>
+                                    <group>
+                                        <field name="default_debit_account_id" domain="[('deprecated', '=', False)]" />
+                                        <field name="default_credit_account_id" domain="[('deprecated', '=', False)]" />
+                                        <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="advanced_settings" string="Advanced Settings">
+                                <group>
+                                    <group string="Control-Access" groups="base.group_no_one">
+                                        <div class="text-muted" colspan="2">Keep empty for no control</div>
+                                        <field name="type_control_ids" widget="many2many_tags"/>
+                                        <field name="account_control_ids" widget="many2many_tags"/>
+                                    </group>
+                                    <group string="Miscellaneous">
+                                        <field name="inbound_payment_method_ids" widget="many2many_checkboxes" attrs="{'invisible': [('type', 'not in', ['bank', 'cash'])]}"/>
+                                        <field name="outbound_payment_method_ids" widget="many2many_checkboxes" attrs="{'invisible': [('type', 'not in', ['bank', 'cash'])]}"/>
+                                        <field name="group_invoice_lines" attrs="{'invisible': [('type', 'not in', ['sale', 'purchase'])]}"/>
+                                        <field name="profit_account_id" attrs="{'invisible': [('type', '!=', 'cash')]}"/>
+                                        <field name="loss_account_id" attrs="{'invisible': [('type', '!=', 'cash')]}"/>
+                                        <field name="show_on_dashboard" groups="base.group_no_one"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="bank_account" string="Bank Account" attrs="{'invisible': [('type', '!=', 'bank')]}">
+                                <group>
+                                    <group>
+                                        <field name="bank_acc_number"/>
+                                        <field name="bank_id"/>
+                                        <field name="display_on_footer"/>
+                                    </group>
+                                    <group >
+                                        <field name="bank_statements_source" widget="radio" attrs="{'required': [('type', '=', 'bank')]}"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        
+        <record id="action_account_bank_journal_form34" model="ir.actions.act_window">
+            <field name="name">Bank Accounts</field>
+            <field name="res_model">account.journal</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type', 'in', ['bank', 'cash'])]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to add a bank account.
+              </p>
+            </field>
+        </record>
+
+        <menuitem action="action_account_bank_journal_form34" id="menu_action_account_bank_journal_form34" parent="account.menu_finance_entries" sequence="89" name="Forma de pago"/>
+
+        
+    </data>
+</odoo>
+    
+        

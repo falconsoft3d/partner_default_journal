@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <odoo>
+        <record id="view_res_partner_default_journal" model="ir.ui.view">
+            <field name="name">view.res.partner.default.journal</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                
+                <xpath expr="//field[@name='credit']" position="after">
+                        <field name="journal_credit"/>
+                </xpath>
+
+                <xpath expr="//field[@name='debit']" position="after">
+                        <field name="journal_debit"/>
+                </xpath>
+
+            </field>
+        
+        </record>
+    </odoo>
+
+
